@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CropTalker V2.0 - Мониторинг датчиков</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌱 CropTalker V2.0</h1>
+            <p class="subtitle">Система мониторинга агроклиматических параметров</p>
+        </header>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <span class="status-label">Статус:</span>
+                <span id="connectionStatus" class="status-value status-connecting">Подключение...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Последнее обновление:</span>
+                <span id="lastUpdate" class="status-value">-</span>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="period-selector">
+                <label for="periodSelect">Период отображения:</label>
+                <select id="periodSelect">
+                    <option value="hour">Последний час</option>
+                    <option value="day" selected>Последние сутки</option>
+                    <option value="week">Неделя</option>
+                    <option value="month">Месяц</option>
+                    <option value="all">Все время</option>
+                </select>
+            </div>
+
+            <div class="export-controls">
+                <label>Экспорт данных:</label>
+                <button id="exportCSV" class="btn btn-primary">Скачать CSV</button>
+                <button id="exportTXT" class="btn btn-secondary">Скачать TXT</button>
+            </div>
+        </div>
+
+        <div class="current-values">
+            <h2>Текущие показания</h2>
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-icon">🌡️</div>
+                    <div class="value-content">
+                        <div class="value-label">Температура воздуха</div>
+                        <div class="value-number" id="currentTair">-</div>
+                        <div class="value-unit">°C</div>
+                    </div>
+                </div>
+
+                <div class="value-card">
+                    <div class="value-icon">💧</div>
+                    <div class="value-content">
+                        <div class="value-label">Влажность воздуха</div>
+                        <div class="value-number" id="currentRH">-</div>
+                        <div class="value-unit">%</div>
+                    </div>
+                </div>
+
+                <div class="value-card">
+                    <div class="value-icon">⏲️</div>
+                    <div class="value-content">
+                        <div class="value-label">Давление</div>
+                        <div class="value-number" id="currentPressure">-</div>
+                        <div class="value-unit">кПа</div>
+                    </div>
+                </div>
+
+                <div class="value-card">
+                    <div class="value-icon">☀️</div>
+                    <div class="value-content">
+                        <div class="value-label">ФАР (солнечная радиация)</div>
+                        <div class="value-number" id="currentPAR">-</div>
+                        <div class="value-unit">мкмоль/м²/с</div>
+                    </div>
+                </div>
+
+                <div class="value-card">
+                    <div class="value-icon">🌿</div>
+                    <div class="value-content">
+                        <div class="value-label">NDVI (вегетационный индекс)</div>
+                        <div class="value-number" id="currentNDVI">-</div>
+                        <div class="value-unit"></div>
+                    </div>
+                </div>
+
+                <div class="value-card">
+                    <div class="value-icon">🌾</div>
+                    <div class="value-content">
+                        <div class="value-label">MSAVI (вегетационный индекс)</div>
+                        <div class="value-number" id="currentMSAVI">-</div>
+                        <div class="value-unit"></div>
+                    </div>
+                </div>
+
+                <div class="value-card">
+                    <div class="value-icon">📏</div>
+                    <div class="value-content">
+                        <div class="value-label">Высота растений</div>
+                        <div class="value-number" id="currentDistance">-</div>
+                        <div class="value-unit">мм</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="charts-section">
+            <h2>Графики изменения параметров</h2>
+
+            <div class="chart-container">
+                <h3>Температура и влажность воздуха</h3>
+                <canvas id="airChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <h3>Давление</h3>
+                <canvas id="pressureChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <h3>Солнечная радиация (ФАР)</h3>
+                <canvas id="parChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <h3>Вегетационные индексы</h3>
+                <canvas id="vegetationChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <h3>Температура почвы</h3>
+                <canvas id="soilTempChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <h3>Влажность почвы</h3>
+                <canvas id="soilMoistureChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <h3>Высота растений</h3>
+                <canvas id="plantHeightChart"></canvas>
+            </div>
+        </div>
+
+        <footer>
+            <p>CropTalker V2.0 - Система мониторинга агроклиматических параметров</p>
+            <p>Автоматическое обновление данных каждые 3-5 минут</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
